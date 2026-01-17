@@ -1,4 +1,4 @@
-name: Action validation - Dev
+name: Action Validation - Dev
 on: [push, pull_request]
 jobs:
   test:

@@ -1,5 +1,5 @@
-name: Action validation
-on: workflow_dispatch
+name: Action validation - Dev
+on: [push, pull_request]
 jobs:
   test:
     runs-on: ${{ matrix.os }}

@@ -93,7 +93,7 @@ runs:
         elif [[ ${{ inputs.version }} == "dev" ]]; then
           git clone https://github.com/julelang/jule.git $DIRECTORY/julec-${{ inputs.version }}
         else
-          curl -o julec.tar.gz https://github.com/julelang/jule/archive/refs/tags/jule-${{ inputs.version }}.tar.gz -O julec.tar.gz
+          curl -o julec.tar.gz https://github.com/julelang/jule/archive/refs/tags/${{ inputs.version }}.tar.gz -O julec.tar.gz
           if [[ "$OS" == "Windows_NT" ]]; then
             mkdir -p $DIRECTORY\\julec-${{ inputs.version }}
             tar -xzf julec.tar.gz -C $DIRECTORY\\julec-${{ inputs.version }}

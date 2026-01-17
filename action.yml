@@ -122,7 +122,7 @@ runs:
           cd $DIRECTORY\\julec-${{ inputs.version }}
         fi
         mkdir bin
-        if [[ "$OS" != "Windows_NT" ]]; then
+        if [[ "$OS" == "Windows_NT" ]]; then
           clang++ -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -fuse-ld=lld -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o bin\\julec.exe ir.cpp -lws2_32 -lshell32 -liphlpapi -lsynchronization
         else
           clang++ -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fexcess-precision=standard -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o ./bin/julec ir.cpp

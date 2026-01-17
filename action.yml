@@ -133,13 +133,13 @@ runs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        if [[ ${{ inputs.add-to-path }} == true ]]; then
+        if ('${{ inputs.add-to-path }}' -eq 'true') {
           echo "$DIRECTORY\\julec-${{ inputs.version }}\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        fi
+        }
     - name: Add Jule binaries to the PATH (UNIX-Like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |
-        if [[ ${{ inputs.add-to-path }} == true ]]; then
+        if [[ ${{ inputs.add-to-path }} == 'true' ]]; then
           echo "export PATH=\$PATH:$DIRECTORY/julec-${{ inputs.version }}/bin/" >> $GITHUB_PATH
         fi

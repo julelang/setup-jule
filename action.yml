@@ -40,9 +40,11 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]] && [[ "$OSTYPE" != "Windows_NT" ]]; then
-          brew update
-          brew install jq
+        if [[ "$OS" != "Windows_NT" ]]; then
+          if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
+            brew update
+            brew install jq
+          fi
         fi
     - name: Adjust directory (UNIX-Like)
       if: runner.os == 'Linux' || runner.os == 'macOS'

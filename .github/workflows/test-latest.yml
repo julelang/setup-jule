@@ -1,0 +1,17 @@
+name: Action Validation - Latest
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Jule
+        uses: julelang/setup-jule@master
+        with:
+          version: latest
+          directory: .
+          add-to-path: true
+          architecture: amd64

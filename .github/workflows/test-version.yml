@@ -1,4 +1,4 @@
-name: Action Validation - Latest
+name: Action Validation - Version
 on: [push, pull_request]
 jobs:
   test:
@@ -11,6 +11,6 @@ jobs:
       - name: Setup Jule
         uses: julelang/setup-jule@master
         with:
-          version: latest
+          version: jule0.1.7
           arch: amd64
           directory: .

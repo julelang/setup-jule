@@ -1,0 +1,139 @@
+name: "Setup Jule environment"
+description: "Use Jule on GitHub Actions"
+author: "julelang"
+branding:
+  icon: workflow
+  color: gray-dark
+inputs:
+  version:
+    description: "The version of Jule that will be downloaded. Use \"latest\" for the latest stable release."
+    required: true
+    default: "latest"
+  directory:
+    description: "Directory where Jule will be downloaded."
+    required: true
+    default: "."
+  architecture:
+    description: "The architecture that's going to be used. Valid options are \"arm64\", \"amd64\", and \"i386\" (Windows/Linux only)."
+    required: false
+    default: "amd64"
+  add-to-path:
+    description: "Whether to add Jule binaries to the PATH or not."
+    required: false
+    default: "true"
+runs:
+  using: "composite"
+  steps:
+    - name: Install Homebrew if Needed
+      shell: bash
+      run: |
+        if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
+          if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            echo 'export PATH="/usr/local/bin:$PATH"' >> $GITHUB_PATH
+          elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "export PATH=\$PATH:/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          fi
+        fi
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]] && [[ "$OSTYPE" != "Windows_NT" ]]; then
+          brew update
+          brew install jq
+        fi
+    - name: Adjust directory
+      shell: bash
+      run: |
+        if [[ "$OS" != "Windows_NT" ]]; then
+          directory="${{ inputs.directory }}"
+          if [[ ${{ inputs.directory }} == */ ]]; then
+            directory="${directory%?}"
+          fi
+        fi
+
+        if [[ "$OS" == "Windows_NT" ]]; then
+          directory="${directory//\\//}"
+        fi
+        echo "DIRECTORY=$directory" >> $GITHUB_ENV
+    - name: Adjust directory (Windows)
+      shell: pwsh
+      run: |
+        if ($env:OS -eq "Windows_NT") {
+          $directory = "${{ inputs.directory }}"
+          if ($directory.EndsWith("/")) {
+            $directory = $directory.Substring(0, $directory.Length - 1)
+          }
+
+          $directory = $directory -replace '\\', '/'
+          echo "DIRECTORY=$directory" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        }
+    - name: Clone JuleC
+      shell: bash
+      run: |
+        if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
+          RELEASES=$(curl -s https://api.github.com/repos/julelang/jule/releases)
+          LATEST_RELEASE=$(echo "$RELEASES" | jq -r '.[] | select(.draft == false) | .tarball_url' | head -n 1)
+
+          if [[ "$OS" == "Windows_NT" ]]; then
+            curl -o julec.tar.gz $LATEST_RELEASE
+            mkdir -p $DIRECTORY\\julec-latest
+            tar -xzf julec.tar.gz -C $DIRECTORY\\julec-latest
+          else
+            curl -o julec.tar.gz $LATEST_RELEASE
+            mkdir -p $DIRECTORY/julec-latest
+            tar -xzf julec.tar.gz -C $DIRECTORY/julec-latest
+          fi
+        elif [[ ${{ inputs.version }} == "dev" ]]; then
+          git clone https://github.com/julelang/jule.git $DIRECTORY/julec-${{ inputs.version }}
+        else
+          curl -o julec.tar.gz https://github.com/julelang/jule/archive/refs/tags/jule-${{ inputs.version }}.tar.gz -O julec.tar.gz
+          if [[ "$OS" == "Windows_NT" ]]; then
+            mkdir -p $DIRECTORY\\julec-${{ inputs.version }}
+            tar -xzf julec.tar.gz -C $DIRECTORY\\julec-${{ inputs.version }}
+          else
+            mkdir -p $DIRECTORY/julec-${{ inputs.version }}
+            tar -xzf julec.tar.gz -C $DIRECTORY/julec-${{ inputs.version }}
+          fi
+        fi
+    - name: Get JuleC IR
+      shell: bash
+      run: |
+        if [[ "$OS" != "Windows_NT" ]]; then
+          cd $DIRECTORY/julec-${{ inputs.version }}
+        else
+          cd $DIRECTORY\\julec-${{ inputs.version }}
+        fi
+
+        architecture=${{ inputs.architecture }}
+        if [[ "$OSTYPE" == "darwin"* ]] && [[ "$architecture" == "i386" ]]; then
+          architecture="amd64"
+        fi
+
+        curl -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/$( [[ "$OS" == "Windows_NT" ]] && echo windows || ([[ "$OSTYPE" == "darwin"* ]] && echo darwin || echo linux))-$architecture.cpp
+    - name: Compile JuleC
+      shell: bash
+      run: |
+        if [[ "$OS" != "Windows_NT" ]]; then
+          cd $DIRECTORY/julec-${{ inputs.version }}
+        else
+          cd $DIRECTORY\\julec-${{ inputs.version }}
+        fi
+        mkdir bin
+        if [[ "$OS" != "Windows_NT" ]]; then
+          clang++ -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -fuse-ld=lld -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o bin\\julec.exe ir.cpp -lws2_32 -lshell32 -liphlpapi -lsynchronization
+        else
+          clang++ -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fexcess-precision=standard -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o ./bin/julec ir.cpp
+        fi
+    - name: Add JuleC to the PATH
+      shell: bash
+      run: |
+        if [[ ${{ inputs.add-to-path }} == true ]]; then
+          if [[ "$OS" == "Windows_NT" ]]; then
+            echo "$DIRECTORY\\julec-${{ inputs.version }}\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          else
+            echo "export PATH=\$PATH:$DIRECTORY/julec-${{ inputs.version }}/bin/" >> $GITHUB_PATH
+          fi
+        fi

@@ -12,5 +12,4 @@ jobs:
         uses: julelang/setup-jule@master
         with:
           version: latest
-          arch: amd64
           directory: .

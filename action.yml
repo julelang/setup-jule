@@ -13,7 +13,7 @@ inputs:
     description: "Directory where Jule will be downloaded."
     required: true
     default: "."
-  architecture:
+  arch:
     description: "The architecture that's going to be used. Valid options are \"arm64\", \"amd64\", and \"i386\" (Windows/Linux only)."
     required: false
     default: "amd64"
@@ -109,12 +109,12 @@ runs:
           cd $DIRECTORY\\julec-${{ inputs.version }}
         fi
 
-        architecture=${{ inputs.architecture }}
-        if [[ "$OSTYPE" == "darwin"* ]] && [[ "$architecture" == "i386" ]]; then
-          architecture="amd64"
+        arch=${{ inputs.arch }}
+        if [[ "$OSTYPE" == "darwin"* ]] && [[ "$arch" == "i386" ]]; then
+          arch="amd64"
         fi
 
-        curl -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/$( [[ "$OS" == "Windows_NT" ]] && echo windows || ([[ "$OSTYPE" == "darwin"* ]] && echo darwin || echo linux))-$architecture.cpp
+        curl -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/$( [[ "$OS" == "Windows_NT" ]] && echo windows || ([[ "$OSTYPE" == "darwin"* ]] && echo darwin || echo linux))-$arch.cpp
     - name: Compile JuleC
       shell: bash
       run: |

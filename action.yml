@@ -131,3 +131,7 @@ runs:
         if [[ ${{ inputs.add-to-path }} == 'true' ]]; then
           echo "export PATH=\$PATH:$DIRECTORY/jule/bin/" >> $GITHUB_PATH
         fi
+    - name: Version
+      shell: bash
+      run: |
+        julec version

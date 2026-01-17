@@ -44,7 +44,8 @@ runs:
           brew update
           brew install jq
         fi
-    - name: Adjust directory
+    - name: Adjust directory (UNIX-Like)
+      if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |
         if [[ "$OS" != "Windows_NT" ]]; then
@@ -59,6 +60,7 @@ runs:
         fi
         echo "DIRECTORY=$directory" >> $GITHUB_ENV
     - name: Adjust directory (Windows)
+      if: runner.os == 'Windows'
       shell: pwsh
       run: |
         if ($env:OS -eq "Windows_NT") {
@@ -127,13 +129,17 @@ runs:
         else
           clang++ -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fexcess-precision=standard -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o ./bin/julec ir.cpp
         fi
-    - name: Add JuleC to the PATH
+     - name: Add Jule binaries to the PATH (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        if [[ ${{ inputs.add-to-path }} == true ]]; then
+          echo "$DIRECTORY\\julec-${{ inputs.version }}\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        fi
+    - name: Add Jule binaries to the PATH (UNIX-Like)
+      if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |
         if [[ ${{ inputs.add-to-path }} == true ]]; then
-          if [[ "$OS" == "Windows_NT" ]]; then
-            echo "$DIRECTORY\\julec-${{ inputs.version }}\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          else
-            echo "export PATH=\$PATH:$DIRECTORY/julec-${{ inputs.version }}/bin/" >> $GITHUB_PATH
-          fi
+          echo "export PATH=\$PATH:$DIRECTORY/julec-${{ inputs.version }}/bin/" >> $GITHUB_PATH
         fi

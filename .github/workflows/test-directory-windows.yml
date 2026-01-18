@@ -1,0 +1,12 @@
+name: Action Validation - Directory (Windows)
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Jule
+        uses: julelang/setup-jule@master
+        with:
+          version: latest
+          directory: C:\

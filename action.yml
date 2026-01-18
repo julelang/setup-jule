@@ -110,8 +110,10 @@ runs:
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            RELEASES=$(curl -s https://api.github.com/repos/julelang/jule/releases)
-            LATEST_RELEASE_TAG=$(echo "$RELEASES" | jq -r '.[] | select(.draft == false) | .tag_name' | head -n 1)
+            LATEST_RELEASE_TAG=$(curl -s https://api.github.com/repos/julelang/jule/releases/latest | jq -er '.tag_name') || {
+              echo "Failed to fetch latest release tag"
+              exit 1
+            }
             version="${LATEST_RELEASE_TAG}"
           fi
           curl -L -o release.zip "https://github.com/julelang/jule/releases/download/$version/$version-$target.zip"

@@ -20,28 +20,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install Homebrew if Needed
-      shell: bash
-      run: |
-        if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-          if [[ "$RUNNER_OS" == "macOS" ]] || [[ "$RUNNER_OS" == "Linux" ]]; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          fi
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            echo 'export PATH="/usr/local/bin:$PATH"' >> $GITHUB_PATH
-          elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            echo "export PATH=\$PATH:/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
-          fi
-        fi
-    - name: Install dependencies
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" != "Windows" ]]; then
-          if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            brew update
-            brew install jq
-          fi
-        fi
     - name: Adjust directory (UNIX-Like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
@@ -110,11 +88,7 @@ runs:
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            LATEST_RELEASE_TAG=$(curl -s https://api.github.com/repos/julelang/jule/releases/latest | jq -er '.tag_name') || {
-              echo "Failed to fetch latest release tag"
-              exit 1
-            }
-            version="${LATEST_RELEASE_TAG}"
+            version="jule0.1.7"
           fi
           curl -L -o release.zip "https://github.com/julelang/jule/releases/download/$version/$version-$target.zip"
           unzip release.zip -d "$DIRECTORY"

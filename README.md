@@ -23,10 +23,15 @@ jobs:
 
 The version of Jule that will be used.
 
-- `latest` and `current` for the latest release.
+- `latest` and `current` for the latest supported release.
 - `dev` for the latest commit of source code, the compileir is based on the IR version.
 - `juleX.X.X` for the specific version of Jule.
 
+> [!NOTE]
+> The `latest` and `current` options do not point to the most recently released version immediately.\
+> So, when a new Jule version is released, it may take some time for the `latest` and `current` options to point to the new version.
+
+> [!WARNING]
 > Version support is guaranteed for `jule0.1.7` and later.\
 > Older versions may be specified, but support is not guaranteed.
 

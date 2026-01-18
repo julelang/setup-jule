@@ -24,12 +24,18 @@ jobs:
 The version of Jule that will be used.
 
 - `latest` and `current` for the latest supported release.
-- `dev` for the latest commit of source code, the compileir is based on the IR version.
+- `dev` for the latest commit of source code, the compiler is based on the IR version.
 - `juleX.X.X` for the specific version of Jule.
 
 > [!NOTE]
 > The `latest` and `current` options do not point to the most recently released version immediately.\
 > So, when a new Jule version is released, it may take some time for the `latest` and `current` options to point to the new version.
+
+> [!TIP]
+> If you don't need access to the latest features and updates, using the `dev` version can significantly increase your CI build times.\
+> This is because other versions download precompiled releases, so everything comes pre-packaged.\
+> However, in the `dev` version, many things need to be packaged from scratch, which can take a considerable amount of time.\
+> Therefore, unless necessary, use `latest`, `current`, or a specific Jule release version.
 
 > [!WARNING]
 > Version support is guaranteed for `jule0.1.7` and later.\

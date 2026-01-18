@@ -2,7 +2,7 @@ name: "Setup Jule environment"
 description: "Use Jule on GitHub Actions"
 author: "julelang"
 branding:
-  icon: workflow
+  icon: code
   color: gray-dark
 inputs:
   version:

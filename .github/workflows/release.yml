@@ -1,0 +1,25 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+jobs:
+  update-major-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Move major tag
+        run: |
+          VERSION="${GITHUB_REF_NAME}"   # Example: v1.2.3
+          MAJOR="${VERSION%%.*}"         # Example: v1
+          echo "Updating major tag $MAJOR to point to $VERSION"
+          git tag -f "$MAJOR" "$VERSION"
+          git push origin "$MAJOR" --force

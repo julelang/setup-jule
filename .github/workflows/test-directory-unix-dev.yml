@@ -1,12 +1,12 @@
-name: Action Validation - Directory (latest, Windows)
+name: Action Validation - Directory (dev, UNIX-Like)
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Jule
         uses: julelang/setup-jule@master
         with:
-          version: latest
-          directory: C:\
+          version: dev
+          directory: ..

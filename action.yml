@@ -77,6 +77,9 @@ runs:
         fi
         if [[ ${{ inputs.version }} == "dev" ]]; then
           bash <(curl -s https://raw.githubusercontent.com/julelang/julec-ir/main/compile-ir.sh)
+          if [[ "$DIRECTORY" != "." ]] && [[ "$DIRECTORY" != "./" ]]; then
+            mv "jule" "$DIRECTORY/jule"
+          fi
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then

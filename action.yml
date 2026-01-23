@@ -20,34 +20,26 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Adjust directory (UNIX-Like)
+    - name: Adjust Directory (UNIX-Like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |
-        if [[ "$RUNNER_OS" != "Windows" ]]; then
-          directory="${{ inputs.directory }}"
-          if [[ ${{ inputs.directory }} == */ ]]; then
-            directory="${directory%?}"
-          fi
-        fi
-
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          directory="${directory//\\//}"
+        directory="${{ inputs.directory }}"
+        if [[ ${{ inputs.directory }} == */ ]]; then
+          directory="${directory%?}"
         fi
         echo "DIRECTORY=$directory" >> $GITHUB_ENV
-    - name: Adjust directory (Windows)
+    - name: Adjust Directory (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        if ($env:OS -eq "Windows_NT") {
-          $directory = "${{ inputs.directory }}"
-          if ($directory.EndsWith("/")) {
-            $directory = $directory.Substring(0, $directory.Length - 1)
-          }
-
-          $directory = $directory -replace '\\', '/'
-          echo "DIRECTORY=$directory" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $directory = "${{ inputs.directory }}"
+        if ($directory.EndsWith("/")) {
+          $directory = $directory.Substring(0, $directory.Length - 1)
         }
+
+        $directory = $directory -replace '\\', '/'
+        echo "DIRECTORY=$directory" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     - name: Install Jule
       shell: bash
       run: |

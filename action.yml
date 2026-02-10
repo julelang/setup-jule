@@ -83,7 +83,7 @@ runs:
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            version="jule0.1.7"
+            version="jule0.2.0"
           fi
           curl -L -o release.zip "https://github.com/julelang/jule/releases/download/$version/$version-$target.zip"
           unzip release.zip -d "$DIRECTORY"

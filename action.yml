@@ -20,7 +20,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Adjust Directory (UNIX-Like)
+    - name: Adjust Directory (UNIX-like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |
@@ -83,10 +83,20 @@ runs:
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            version="jule0.2.1"
+            version="jule0.2.2"
           fi
-          curl -L -o release.zip "https://github.com/julelang/jule/releases/download/$version/$version-$target.zip"
-          unzip release.zip -d "$DIRECTORY"
+          if [[ "$target" == "darwin-arm64" ]] || [[ "$target" == "darwin-amd64" ]]; then
+            curl -L -o release.tar.xz "https://github.com/julelang/jule/releases/download/$version/$version-$target.tar.xz"
+            tar -xf release.tar.xz -C "$DIRECTORY"
+          elif [[ "$target" == "linux-arm64" ]] || [[ "$target" == "linux-amd64" ]] || [[ "$target" == "linux-i386" ]]; then
+            curl -L -o release.tar.xz "https://github.com/julelang/jule/releases/download/$version/$version-$target.tar.xz"
+            tar -xf release.tar.xz -C "$DIRECTORY"
+          elif [[ "$target" == "windows-arm64" ]] || [[ "$target" == "windows-amd64" ]] || [[ "$target" == "windows-i386" ]]; then
+            curl -L -o release.zip "https://github.com/julelang/jule/releases/download/$version/$version-$target.zip"
+            unzip release.zip -d "$DIRECTORY"
+          else
+            echo "unsupported target: ${target}"
+          fi
         fi
     - name: Add Jule binaries to the PATH (Windows)
       if: runner.os == 'Windows'
@@ -95,7 +105,7 @@ runs:
         if ('${{ inputs.add-to-path }}' -eq 'true') {
           echo "$env:DIRECTORY\jule\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         }
-    - name: Add Jule binaries to the PATH (UNIX-Like)
+    - name: Add Jule binaries to the PATH (UNIX-like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash
       run: |

@@ -1,4 +1,4 @@
-name: Action Validation - Directory (latest, UNIX-Like)
+name: Action Validation - Directory (latest, UNIX-like)
 on: [push, pull_request]
 jobs:
   test:

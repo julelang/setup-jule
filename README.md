@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: julelang/setup-jule@v2
+      - uses: julelang/setup-jule@v3
         with:
           version: latest
 ```
@@ -38,7 +38,7 @@ The version of Jule that will be used.
 > Therefore, unless necessary, use `latest`, `current`, or a specific Jule release version.
 
 > [!WARNING]
-> Version support is guaranteed for `jule0.2.2` and later.\
+> Version support is guaranteed for `jule0.3.0` and later.\
 > Older versions may be specified, but support is not guaranteed.
 
 #### Targets

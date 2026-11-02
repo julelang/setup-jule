@@ -83,7 +83,7 @@ runs:
         else
           version=${{ inputs.version }}
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
-            version="jule0.2.2"
+            version="jule0.3.0"
           fi
           if [[ "$target" == "macos-arm64" ]] || [[ "$target" == "macos-amd64" ]]; then
             curl -L -o release.tar.xz "https://github.com/julelang/jule/releases/download/$version/$version-$target.tar.xz"

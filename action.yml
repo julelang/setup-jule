@@ -47,7 +47,7 @@ runs:
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           os="windows"
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          os="darwin"
+          os="macos"
         elif [[ "$RUNNER_OS" == "Linux" ]]; then
           os="linux"
         else
@@ -66,7 +66,7 @@ runs:
           exit 1
         fi
         target="${os}-${arch}"
-        if [[ "$target" == "darwin-arm64" ]] || [[ "$target" == "darwin-amd64" ]]; then
+        if [[ "$target" == "macos-arm64" ]] || [[ "$target" == "macos-amd64" ]]; then
           :
         elif [[ "$target" == "linux-arm64" ]] || [[ "$target" == "linux-amd64" ]] || [[ "$target" == "linux-i386" ]]; then
           :
@@ -85,7 +85,7 @@ runs:
           if [[ ${{ inputs.version }} == "latest" ]] || [[ ${{ inputs.version }} == "current" ]]; then
             version="jule0.2.2"
           fi
-          if [[ "$target" == "darwin-arm64" ]] || [[ "$target" == "darwin-amd64" ]]; then
+          if [[ "$target" == "macos-arm64" ]] || [[ "$target" == "macos-amd64" ]]; then
             curl -L -o release.tar.xz "https://github.com/julelang/jule/releases/download/$version/$version-$target.tar.xz"
             tar -xf release.tar.xz -C "$DIRECTORY"
           elif [[ "$target" == "linux-arm64" ]] || [[ "$target" == "linux-amd64" ]] || [[ "$target" == "linux-i386" ]]; then

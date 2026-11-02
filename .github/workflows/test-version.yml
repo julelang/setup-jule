@@ -11,5 +11,5 @@ jobs:
       - name: Setup Jule
         uses: julelang/setup-jule@master
         with:
-          version: jule0.2.2
+          version: jule0.3.0
           directory: .

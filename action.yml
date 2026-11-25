@@ -20,6 +20,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Update LLVM (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        choco upgrade llvm -y --no-progress
+        $env:Path = "C:\Program Files\LLVM\bin;$env:Path"
+        clang++ --version
     - name: Adjust Directory (UNIX-like)
       if: runner.os == 'Linux' || runner.os == 'macOS'
       shell: bash

@@ -20,6 +20,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # Windows CI build failures caused by an incompatibility
+    # between LLVM Clang and the MSVC Standard Library version.
+    # Upgrade LLVM before building to ensure compatibiltiy.
     - name: Update LLVM (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
